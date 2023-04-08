@@ -1,51 +1,15 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
 
+
 namespace TanksVS
 {
-    public class Player : Game
-    {
-        public Texture2D TankTexture;
-        public Vector2 Position;
-
-        private const float Speed = 200f;
-
-        public Player(Vector2 position)
-        {
-            Position = position;
-        }
-
-        public void Movement(GameTime gameTime)
-        {
-            var kstate = Keyboard.GetState();
-            var deltaSeconds = (float)gameTime.ElapsedGameTime.TotalSeconds;
-            if (kstate.IsKeyDown(Keys.Up))
-            {
-                Position.Y -= Speed * deltaSeconds;
-            }
-
-            if (kstate.IsKeyDown(Keys.Down))
-            {
-                Position.Y += Speed * deltaSeconds;
-            }
-
-            if (kstate.IsKeyDown(Keys.Left))
-            {
-                Position.X -= Speed * deltaSeconds;
-            }
-
-            if (kstate.IsKeyDown(Keys.Right))
-            {
-                Position.X += Speed * deltaSeconds;
-            }
-        }
-    }
-
     public class Game1 : Game
     {
-        private Player _player;
+        private Player _player1;
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
@@ -53,30 +17,27 @@ namespace TanksVS
         {
             _graphics = new GraphicsDeviceManager(this);
             ChangeResolution(1920, 1080);
+            _graphics.ToggleFullScreen();
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
         }
 
         protected override void Initialize()
         {
-            _player = new Player(new Vector2(100, 200));
-
+            _player1 = new Player(new Vector2(100, 200), Content.Load<Texture2D>("tank1"));
             base.Initialize();
         }
 
         protected override void LoadContent()
         {
-            
             _spriteBatch = new SpriteBatch(GraphicsDevice);
-            _player.TankTexture = Content.Load<Texture2D>("ball");
-
         }
 
         protected override void Update(GameTime gameTime)
         {
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
-            _player.Movement(gameTime);
+            _player1.Control(gameTime, _graphics);
 
             base.Update(gameTime);
         }
@@ -86,7 +47,15 @@ namespace TanksVS
             _graphics.GraphicsDevice.Clear(Color.White);
             _spriteBatch.Begin();
 
-            _spriteBatch.Draw(_player.TankTexture, _player.Position, Color.White);
+            _spriteBatch.Draw(_player1.TankTexture,
+                new Rectangle((int)_player1.Position.X,(int)_player1.Position.Y, _player1.TankTexture.Width + 5, _player1.TankTexture.Height + 5), 
+                null,
+                Color.Wheat,
+                _player1.Rotation, 
+                _player1.Origin,
+                SpriteEffects.None,
+                0f);
+           
             _spriteBatch.End();
             base.Draw(gameTime);
         }
