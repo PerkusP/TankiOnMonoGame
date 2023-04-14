@@ -2,13 +2,25 @@
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-
-
+using System;
+using System.Collections.Generic;
 
 namespace TanksVS
 {
     public class Game1 : Game
     {
+        private Dictionary<Keys, Actions> _controlDictionary = new Dictionary<Keys, Actions>()
+        {
+            { Keys.Left, Actions.Left},
+            { Keys.Right, Actions.Right },
+            { Keys.Up, Actions.Forward },
+            { Keys.Down, Actions.Backward },
+            { Keys.A, Actions.Left },
+            { Keys.D, Actions.Right },
+            { Keys.W, Actions.Forward },
+            { Keys.S, Actions.Backward },
+            { Keys.None, Actions.None }
+        };
         private Player _player1;
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
@@ -16,28 +28,40 @@ namespace TanksVS
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
-            ChangeResolution(1920, 1080);
-            _graphics.ToggleFullScreen();
+            ChangeResolution(1600, 800);
+            //_graphics.ToggleFullScreen();
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
+            
         }
 
         protected override void Initialize()
         {
-            _player1 = new Player(new Vector2(100, 200), Content.Load<Texture2D>("tank1"));
+
+            _player1 = new Player(new Vector2(_graphics.PreferredBackBufferWidth / 2, _graphics.PreferredBackBufferHeight / 2), 
+                0.5f, 
+                Content.Load<Texture2D>("tank1"));
+
+            Player.ControlDictionary = _controlDictionary;
+            Player.Graphics = _graphics;
             base.Initialize();
         }
 
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
+            Player.SpriteBatch = _spriteBatch;
         }
 
         protected override void Update(GameTime gameTime)
         {
-            if (Keyboard.GetState().IsKeyDown(Keys.Escape))
+            var keyState = Keyboard.GetState();
+            var b = Keyboard.GetState().GetPressedKeys();
+            if (keyState.IsKeyDown(Keys.Escape))
                 Exit();
-            _player1.Control(gameTime, _graphics);
+            
+
+            _player1.Update(gameTime);
 
             base.Update(gameTime);
         }
@@ -47,14 +71,7 @@ namespace TanksVS
             _graphics.GraphicsDevice.Clear(Color.White);
             _spriteBatch.Begin();
 
-            _spriteBatch.Draw(_player1.TankTexture,
-                new Rectangle((int)_player1.Position.X,(int)_player1.Position.Y, _player1.TankTexture.Width + 5, _player1.TankTexture.Height + 5), 
-                null,
-                Color.Wheat,
-                _player1.Rotation, 
-                _player1.Origin,
-                SpriteEffects.None,
-                0f);
+            _player1.Draw();
            
             _spriteBatch.End();
             base.Draw(gameTime);

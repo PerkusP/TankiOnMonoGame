@@ -10,7 +10,8 @@ namespace TanksVS
     {
         Right,
         Left,
-        Down,
-        Up
+        Backward,
+        Forward,
+        None
     }
 }
