@@ -8,154 +8,115 @@ using System.Collections.Generic;
 
 namespace TanksVS
 {
-    public class Player : Game
+    public class Player
     {
-        public static GraphicsDeviceManager Graphics { get; set; }
 
-        public static Dictionary<Keys, Actions> ControlDictionary;
+        public Dictionary<Keys, Actions> ControlDictionary { get; set; }
 
-        public static SpriteBatch SpriteBatch { get; set; }
+        public readonly static List<Bullet> Bullets = new();
 
-        private float Rotation;
+        public Vector2 _position;
 
-        public Vector2 Position;
+        public Vector2 Origin { get; }
 
-        public readonly Vector2 Origin;
+        public Texture2D TankTexture { get; }
 
-        public readonly Texture2D TankTexture;
+        public float Rotation { get; private set; }
 
+        public Vector2 Position => _position;
+
+        public bool IsAlive { get; set; }
+
+        private DateTime _fireTime;
         private const float _speed = 200f;
+
 
         public Player(Vector2 position, float rotation, Texture2D texture)
         {
-            Position = position;
+            _position = position;
             Rotation = rotation;
             TankTexture = texture;
             Rotation = MathHelper.Clamp(0, 0, 3.14f);
+            _fireTime = DateTime.Now;
             Origin = new Vector2(TankTexture.Width / 2, TankTexture.Height / 2);
-
+            IsAlive = true;
         }
 
-        public void Control(GameTime gameTime)
+        public void Control(GameTime gameTime, Keys[] keys)
         {
-            var kState = Keyboard.GetState();
-            var action = GetAction(kState);
-            var deltaSeconds = (float)gameTime.ElapsedGameTime.TotalSeconds;
-            var deltaRotation = 3f;
-            #region
-            if (kState.IsKeyDown(Keys.A))
+            if (IsAlive) 
             {
-                Rotation -= deltaRotation * deltaSeconds;
-            }
-            if (kState.IsKeyDown(Keys.D))
-            {
-                Rotation += deltaRotation * deltaSeconds;
-            }
-
-            if (kState.IsKeyDown(Keys.W))
-            {
-                Position += ToVector2(Rotation) * deltaSeconds * _speed;
-            }
-
-            if (kState.IsKeyDown(Keys.S))
-            {
-                Position -= ToVector2(Rotation) * deltaSeconds * _speed;
-            }
-
-            if (kState.IsKeyDown (Keys.Q))
-            {
-
-            }
-
-            #endregion
-            Bound();
-            //if (action == Actions.Right)
-            //{
-            //    Rotation += deltaRotation * deltaSeconds;
-            //}
-            //if (action == Actions.Left)
-            //{
-            //    Rotation -= deltaRotation * deltaSeconds;
-            //}
-            //if (action == Actions.Forward)
-            //{
-            //    Position += Direction * deltaSeconds * _speed;
-            //}
-
-            //if (action == Actions.Backward)
-            //{
-            //    Position -= Direction * deltaSeconds * _speed;
-            //}
-
+                var deltaSeconds = (float)gameTime.ElapsedGameTime.TotalSeconds;
+                var deltaRotation = 3f;
             
+                foreach (var key in keys)
+                {
+                    if (ControlDictionary.ContainsKey(key)) 
+                    { 
+                        switch (ControlDictionary[key])
+                        {
+                            case Actions.Left:
+                                Rotation -= deltaRotation * deltaSeconds;
+                                break;
+                            case Actions.Right:
+                                Rotation += deltaRotation * deltaSeconds;
+                                break;
+                            case Actions.Forward:
+                                _position += GetChangedRotation(Rotation) * deltaSeconds * _speed;
+                                break;
+                            case Actions.Backward:
+                                _position -= GetChangedRotation(Rotation) * deltaSeconds * _speed;
+                                break;
+                            case Actions.Fire:
+                                if(DateTime.Now.Subtract(_fireTime).TotalSeconds > 1)
+                                    Fire();
+                                break;
+                            default: 
+                                continue;
+                        }
+                    }
+                }
+
+                Bound();
+            }
         }
 
-        public double Angle => Math.Atan2(Position.Y, Position.X);
+        public bool Collide(Bullet bullet)
+        {
+            var playerRect = new Rectangle((int)_position.X,(int)_position.Y, TankTexture.Width, TankTexture.Height);
+            var bulletRect = new Rectangle((int)bullet.Position.X, (int)bullet.Position.Y, Bullet.Texture.Width, Bullet.Texture.Height);
+            return playerRect.Intersects(bulletRect);
+        }
 
-        public Vector2 ToVector2(float degrees) =>
-            new Vector2((float)Math.Cos(degrees), (float)Math.Sin(degrees));
+        private void Fire()
+        {
+            _fireTime = DateTime.Now;
+            Bullets.Add(new Bullet(GetPositionForFire, GetChangedRotation(Rotation)));
+        }
 
         private void Bound()
         {
-            if (Position.X > Graphics.PreferredBackBufferWidth - TankTexture.Width)
+            if (_position.X > Game1.Width - TankTexture.Width)
             {
-                Position.X = Graphics.PreferredBackBufferWidth - TankTexture.Width;
+                _position.X = Game1.Width - TankTexture.Width;
             }
-            else if (Position.X < TankTexture.Width)
+            else if (_position.X < TankTexture.Width)
             {
-                Position.X = TankTexture.Width;
+                _position.X = TankTexture.Width;
             }
 
-            if (Position.Y > Graphics.PreferredBackBufferHeight - TankTexture.Height)
+            if (_position.Y > Game1.Height - TankTexture.Height)
             {
-                Position.Y = Graphics.PreferredBackBufferHeight - TankTexture.Height;
+                _position.Y = Game1.Height - TankTexture.Height;
             }
-            else if (Position.Y < TankTexture.Height)
+            else if (_position.Y < TankTexture.Height)
             {
-                Position.Y = TankTexture.Height;
+                _position.Y = TankTexture.Height;
             }
         }
 
-        public void Rotate()
-        {
+        private Vector2 GetPositionForFire => _position + GetChangedRotation(Rotation) * 50;
 
-        }
-
-        private Actions GetAction(KeyboardState keyState)
-        {
-            var action = Actions.None;
-            if (keyState.IsKeyDown(Keys.A))
-                action = ControlDictionary[Keys.A];
-            if (keyState.IsKeyDown(Keys.S))
-                action = ControlDictionary[Keys.S];
-            if (keyState.IsKeyDown(Keys.D))
-                action = ControlDictionary[Keys.D];
-            if (keyState.IsKeyDown(Keys.W))
-                action = ControlDictionary[Keys.W];
-            if (keyState.IsKeyDown(Keys.Left))
-                action = ControlDictionary[Keys.Left];
-            if (keyState.IsKeyDown(Keys.Right))
-                action = ControlDictionary[Keys.Right];
-            if (keyState.IsKeyDown(Keys.Down))
-                action = ControlDictionary[Keys.Down];
-            if (keyState.IsKeyDown(Keys.Up))
-                action = ControlDictionary[Keys.Up];
-            return action;
-        }
-        public void Draw()
-        {
-            SpriteBatch.Draw(TankTexture,
-                new Rectangle((int)Position.X, (int)Position.Y, TankTexture.Width + 5, TankTexture.Height + 5),
-                null,
-                Color.Wheat,
-                Rotation,
-                Origin,
-                SpriteEffects.None,
-                0f);
-        }
-        public new void Update(GameTime gameTime)
-        {
-            Control(gameTime);
-        }
+        private static Vector2 GetChangedRotation(float degrees) => new((float)Math.Cos(degrees), (float)Math.Sin(degrees));
     }
 }

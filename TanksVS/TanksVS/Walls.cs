@@ -6,13 +6,11 @@ using System.Threading.Tasks;
 
 namespace TanksVS
 {
-    public enum Actions
+    public class Walls
     {
-        Right,
-        Left,
-        Backward,
-        Forward,
-        Fire,
-        None
+        public Walls() 
+        {
+
+        }
     }
 }
