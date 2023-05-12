@@ -112,9 +112,24 @@ namespace TanksVS
 
         public void Respawn()
         {
-            var randomPos = new[] { new Vector2(400, 120), new Vector2(860, 140), new Vector2(680, 560), new Vector2(360, 660), new Vector2(200, 160), new Vector2(1380, 640), new Vector2(1100, 300) };
+            //var randomPos = new[] { new Vector2(400, 120), new Vector2(860, 140), new Vector2(680, 560), new Vector2(360, 660), new Vector2(200, 160), new Vector2(1380, 640), new Vector2(1100, 300) };
             var rand = new Random();
-            Position = randomPos[rand.Next(0, randomPos.Length)];
+            var randomCoordinates = new Vector2(400,120);
+            
+            for (int j = 0; j < Game1.Walls.Positions.Count; j++)
+            {
+                var coords = new Vector2(rand.Next(100, 1500), rand.Next(140, 800));
+                
+                if (!Game1.Walls.Positions[j].Rectangle.Intersects(new Rectangle((int)coords.X, (int)coords.Y, Texture.Width + 5, Texture.Height + 5)))
+                {
+                    randomCoordinates = coords;
+                    break;
+                }
+     
+            }
+            
+
+            Position = randomCoordinates;
             IsAlive = true;
             
         }

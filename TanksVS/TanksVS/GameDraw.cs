@@ -2,7 +2,6 @@
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
-
 namespace TanksVS
 {
     public static class GameDraw
@@ -35,7 +34,7 @@ namespace TanksVS
             {
                 SpriteBatch.Draw(Bullet.Texture, bullet.Position, Color.Wheat);
             }
-
+  
             
 
             SpriteBatch.End();
