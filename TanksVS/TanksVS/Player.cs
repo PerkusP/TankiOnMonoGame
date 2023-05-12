@@ -8,42 +8,38 @@ using System.Collections.Generic;
 
 namespace TanksVS
 {
-    public class Player : Sprite
+    public class Player
     {
 
         public Dictionary<Keys, Actions> ControlDictionary { get; set; }
 
-        public static List<Bullet> Bullets = new();
+        public readonly static List<Bullet> Bullets = new();
 
-
-        public Points Points { get; set; }
-
-        public int ID { get; private set; }
+        public Vector2 _position;
 
         public Vector2 Origin { get; }
 
-        public Texture2D TankTexture { get; private set; }
+        public Texture2D TankTexture { get; }
 
         public float Rotation { get; private set; }
+
+        public Vector2 Position => _position;
 
         public bool IsAlive { get; set; }
 
         private DateTime _fireTime;
+        private const float _speed = 200f;
 
-        
 
-        public Player(Vector2 position,Vector2 velocity, float rotation, Texture2D texture, int id) : base(position, velocity, Texture)
+        public Player(Vector2 position, float rotation, Texture2D texture)
         {
-            Velocity = velocity;
-            Position = position;
+            _position = position;
             Rotation = rotation;
             TankTexture = texture;
             Rotation = MathHelper.Clamp(0, 0, 3.14f);
             _fireTime = DateTime.Now;
             Origin = new Vector2(TankTexture.Width / 2, TankTexture.Height / 2);
             IsAlive = true;
-            ID = id;
-            Points = new Points(0, new Vector2(id == 1 ?  1560 : 20, 10));
         }
 
         public void Control(GameTime gameTime, Keys[] keys)
@@ -66,10 +62,10 @@ namespace TanksVS
                                 Rotation += deltaRotation * deltaSeconds;
                                 break;
                             case Actions.Forward:
-                                Position += GetChangedRotation(Rotation) * deltaSeconds * Velocity;
+                                _position += GetChangedRotation(Rotation) * deltaSeconds * _speed;
                                 break;
                             case Actions.Backward:
-                                Position -= GetChangedRotation(Rotation) * deltaSeconds * Velocity;
+                                _position -= GetChangedRotation(Rotation) * deltaSeconds * _speed;
                                 break;
                             case Actions.Fire:
                                 if(DateTime.Now.Subtract(_fireTime).TotalSeconds > 1)
@@ -85,31 +81,41 @@ namespace TanksVS
             }
         }
 
+        public bool Collide(Bullet bullet)
+        {
+            var playerRect = new Rectangle((int)_position.X,(int)_position.Y, TankTexture.Width, TankTexture.Height);
+            var bulletRect = new Rectangle((int)bullet.Position.X, (int)bullet.Position.Y, Bullet.Texture.Width, Bullet.Texture.Height);
+            return playerRect.Intersects(bulletRect);
+        }
 
         private void Fire()
         {
             _fireTime = DateTime.Now;
-            Bullets.Add(new Bullet(GetPositionForFire, GetChangedRotation(Rotation), ID));
+            Bullets.Add(new Bullet(GetPositionForFire, GetChangedRotation(Rotation)));
         }
 
         private void Bound()
         {
-            foreach (var wall in Game1.colliders)
+            if (_position.X > Game1.Width - TankTexture.Width)
             {
-                if (Collide(wall))
-                {
-                    if (IsTouchingLeft(wall))
-                        Position.X = wall.Left - 20;
-                    else if (IsTouchingRight(wall))
-                        Position.X = wall.Right;
-                    if (IsTouchingBottom(wall))
-                        Position.Y = wall.Top - 15;
-                    else if (IsTouchingTop(wall))
-                        Position.Y = wall.Bottom;
-                }
+                _position.X = Game1.Width - TankTexture.Width;
+            }
+            else if (_position.X < TankTexture.Width)
+            {
+                _position.X = TankTexture.Width;
+            }
+
+            if (_position.Y > Game1.Height - TankTexture.Height)
+            {
+                _position.Y = Game1.Height - TankTexture.Height;
+            }
+            else if (_position.Y < TankTexture.Height)
+            {
+                _position.Y = TankTexture.Height;
             }
         }
 
+<<<<<<< HEAD
         public void Respawn()
         {
             //var randomPos = new[] { new Vector2(400, 120), new Vector2(860, 140), new Vector2(680, 560), new Vector2(360, 660), new Vector2(200, 160), new Vector2(1380, 640), new Vector2(1100, 300) };
@@ -135,6 +141,9 @@ namespace TanksVS
         }
 
         private Vector2 GetPositionForFire => Position + GetChangedRotation(Rotation) * 30;
+=======
+        private Vector2 GetPositionForFire => _position + GetChangedRotation(Rotation) * 50;
+>>>>>>> parent of 63547b5 (07.05)
 
         private static Vector2 GetChangedRotation(float degrees) => new((float)Math.Cos(degrees), (float)Math.Sin(degrees));
     }
