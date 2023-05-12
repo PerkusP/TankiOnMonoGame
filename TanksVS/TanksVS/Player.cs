@@ -1,5 +1,4 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
@@ -30,9 +29,9 @@ namespace TanksVS
 
         private DateTime _fireTime;
 
-        
 
-        public Player(Vector2 position,Vector2 velocity, float rotation, Texture2D texture, int id) : base(position, velocity, Texture)
+
+        public Player(Vector2 position, Vector2 velocity, float rotation, Texture2D texture, int id) : base(position, velocity, Texture)
         {
             Velocity = velocity;
             Position = position;
@@ -43,20 +42,20 @@ namespace TanksVS
             Origin = new Vector2(TankTexture.Width / 2, TankTexture.Height / 2);
             IsAlive = true;
             ID = id;
-            Points = new Points(0, new Vector2(id == 1 ?  1560 : 20, 10));
+            Points = new Points(0, new Vector2(id == 1 ? 1560 : 20, 10));
         }
 
         public void Control(GameTime gameTime, Keys[] keys)
         {
-            if (IsAlive) 
+            if (IsAlive)
             {
                 var deltaSeconds = (float)gameTime.ElapsedGameTime.TotalSeconds;
                 var deltaRotation = 3f;
-            
+
                 foreach (var key in keys)
                 {
-                    if (ControlDictionary.ContainsKey(key)) 
-                    { 
+                    if (ControlDictionary.ContainsKey(key))
+                    {
                         switch (ControlDictionary[key])
                         {
                             case Actions.Left:
@@ -72,10 +71,10 @@ namespace TanksVS
                                 Position -= GetChangedRotation(Rotation) * deltaSeconds * Velocity;
                                 break;
                             case Actions.Fire:
-                                if(DateTime.Now.Subtract(_fireTime).TotalSeconds > 1)
+                                if (DateTime.Now.Subtract(_fireTime).TotalSeconds > 1)
                                     Fire();
                                 break;
-                            default: 
+                            default:
                                 continue;
                         }
                     }
@@ -116,7 +115,7 @@ namespace TanksVS
             var rand = new Random();
             Position = randomPos[rand.Next(0, randomPos.Length)];
             IsAlive = true;
-            
+
         }
 
         private Vector2 GetPositionForFire => Position + GetChangedRotation(Rotation) * 30;

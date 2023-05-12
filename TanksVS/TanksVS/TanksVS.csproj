@@ -12,10 +12,17 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <None Include="..\..\..\..\..\..\..\..\..\.nuget\packages\monogame.content.builder.task\3.8.1.303\build\MonoGame.Content.Builder.Task.targets" Link="MonoGame.Content.Builder.Task.targets" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="MonoGame.Extended.Content.Pipeline" Version="3.8.0" />
     <PackageReference Include="MonoGame.Framework.WindowsDX" Version="3.8.1.303" />
-    <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.1.303" />
     <PackageReference Include="TiledSharp" Version="1.0.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="Content\Content.mgcb">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Target Name="RestoreDotnetTools" BeforeTargets="Restore">
     <Message Text="Restoring dotnet tools" Importance="High" />
