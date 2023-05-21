@@ -1,3 +1,3 @@
 ﻿
-using var game = new TanksVS.Game1();
+using var game = new TanksVS.Scripts.Game1();
 game.Run();
