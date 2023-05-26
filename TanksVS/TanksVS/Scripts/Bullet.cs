@@ -9,11 +9,12 @@ namespace TanksVS.Scripts
 {
     public class Bullet : Sprite
     {
-        private DateTime createdTime;
+       
         public static new Texture2D Texture;
         public Vector2 Direction;
         public bool Ricocheted;
         public int WhoShooted;
+        private DateTime _createdTime;
 
         public static int Speed { get; set; }
 
@@ -22,17 +23,17 @@ namespace TanksVS.Scripts
             Position = position;
             Direction = direction;
             Ricocheted = false;
-            createdTime = DateTime.Now;
             WhoShooted = whoShooted;
+            _createdTime = DateTime.Now;
         }
 
-        public DateTime CreatedTime => createdTime;
+        public DateTime CreatedTime => _createdTime;
 
         public bool Alive 
         { 
             get 
             {
-                return DateTime.Now.Subtract(createdTime).TotalSeconds < 5;
+                return DateTime.Now.Subtract(_createdTime).TotalSeconds < 5;
             }
         }
 
@@ -40,19 +41,25 @@ namespace TanksVS.Scripts
         {
             var deltaSeconds = (float)gameTime.ElapsedGameTime.TotalSeconds;
             
-            foreach(var wall in game.Colliders)
+            foreach(var wall in game.Collision)
             {
                 if (InWall(wall))
-                    createdTime = new DateTime(1979, 9, 3);
-                
+                {
+                    _createdTime = new DateTime(1979, 9, 3);
+                    return;
+                }
+            }
+
+            foreach(var wall in game.Collision)
+            {
                 if (Collide(wall))
                 {
-                    if (IsTouchingBottom(wall) || IsTouchingTop(wall))
+                    if (IsTouchingTop(wall) || IsTouchingBottom(wall))
                     {
                         Direction = new Vector2(Direction.X, -Direction.Y);
                     }
 
-                    else if (IsTouchingRight(wall) || IsTouchingLeft(wall))
+                    if (IsTouchingRight(wall) || IsTouchingLeft(wall))
                     {
                         Direction = new Vector2(-Direction.X, Direction.Y);
                     }

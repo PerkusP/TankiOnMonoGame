@@ -33,6 +33,21 @@
 /processorParam:TextureFormat=Color
 /build:BackGround.png
 
+#begin CityTiles.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:CityTiles.png
+
+#begin CityTiles.tsx
+/copy:CityTiles.tsx
+
 #begin DesertTiles.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -150,11 +165,11 @@
 #begin Map2.tmx
 /copy:Map2.tmx
 
+#begin Map3.tmx
+/copy:Map3.tmx
+
 #begin MapTanks.tmx
 /copy:MapTanks.tmx
-
-#begin MapTanks2.tmx
-/copy:MapTanks2.tmx
 
 #begin Pixel.spritefont
 /importer:FontDescriptionImporter

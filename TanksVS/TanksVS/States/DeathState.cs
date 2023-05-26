@@ -12,8 +12,8 @@ namespace TanksVS.States
 {
     public class DeathState : State
     {
-        private List<Button> _buttons;
-        private int _whoWin;
+        private readonly List<Button> _buttons;
+        private readonly int _whoWin;
         public DeathState(Game1 game, GraphicsDevice graphics, ContentManager content) : base(game, graphics, content)
         {
             var t_return = content.Load<Texture2D>("gButtonExit");
@@ -28,16 +28,12 @@ namespace TanksVS.States
             };
         }
 
-        private void ReturnToMain(object sender, EventArgs e)
-        {
-            _game.ChangeState(new MainMenuState(_game, _graphics, _content));
-        }
-
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
             GameDraw.Draw(_graphics, spriteBatch, _game);
             spriteBatch.Begin();
-            spriteBatch.DrawString(Game1.SpriteFont, $"Player    {_whoWin}    wins!", new Vector2(_game.Width/2 - 175, _game.Height/2), _whoWin == 1 ? Color.SkyBlue : Color.OrangeRed);
+            spriteBatch.DrawString(_game.SpriteFont, $"Player    {_whoWin}    wins!", new Vector2(_game.Width/2 - 175, _game.Height/2), 
+                _whoWin == 1 ? Color.SkyBlue : Color.OrangeRed);
             foreach (var button in _buttons)
             {
                 button.Draw(spriteBatch);
@@ -51,6 +47,11 @@ namespace TanksVS.States
             {
                 button.Update(gameTime);
             }
+        }
+
+        private void ReturnToMain(object sender, EventArgs e)
+        {
+            _game.ChangeState(new MainMenuState(_game, _graphics, _content));
         }
     }
 }

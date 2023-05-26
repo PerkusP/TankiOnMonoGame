@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using System;
 using System.Collections.Generic;
 
 namespace TanksVS.Scripts
@@ -13,7 +14,26 @@ namespace TanksVS.Scripts
             
             graphics.Clear(Color.White);
             spriteBatch.Begin();
-            game.MapManager.Draw();
+
+            for (int i = 0; i < game.MapManager.Map.Layers.Count; i++)
+            {
+                for (var j = 0; j < game.MapManager.Map.Layers[i].Tiles.Count; j++)
+                {
+                    int gid = game.MapManager.Map.Layers[i].Tiles[j].Gid;
+                    if (gid != 0)
+                    {
+                        var tileFrame = gid - 1;
+                        var col = tileFrame % game.MapManager.TileSetTileWide;
+                        var row = (int)Math.Floor((double)tileFrame / game.MapManager.TileSetTileWide);
+                        var x = (j % game.MapManager.Map.Width) * game.MapManager.Map.TileWidth;
+                        var y = (float)Math.Floor(j / (double)game.MapManager.Map.Width) * game.MapManager.Map.TileHeight;
+                        var rect = new Rectangle(game.MapManager.TileWidth * col, game.MapManager.TileHeight * row, game.MapManager.TileWidth, game.MapManager.TileHeight);
+                        spriteBatch.Draw(game.MapManager.TileSet, 
+                            new Rectangle((int)x, (int)y, game.MapManager.TileWidth, 
+                            game.MapManager.TileHeight), rect, Color.Wheat);
+                    }
+                }
+            }
 
             foreach (var bullet in Player.Bullets)
             {
@@ -22,7 +42,7 @@ namespace TanksVS.Scripts
 
             foreach (var player in game.Players)
             {
-                spriteBatch.DrawString(Game1.SpriteFont, player.Points.Count.ToString(), player.Points.Position, player.ID == 1 ? Color.OrangeRed : Color.SkyBlue);
+                spriteBatch.DrawString(game.SpriteFont, player.Points.Count.ToString(), player.Points.Position, player.ID == 1 ? Color.OrangeRed : Color.SkyBlue);
                 if (player.IsAlive)
                 {
                     spriteBatch.Draw(player.TankTexture,

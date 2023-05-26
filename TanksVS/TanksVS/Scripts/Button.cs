@@ -14,7 +14,7 @@ namespace TanksVS.Scripts
         private MouseState _currentMouseState;
         private bool _isHovering;
         private MouseState _previousMouseState;
-        private Texture2D _texture;
+        private readonly Texture2D _texture;
         
 
         public EventHandler Click;

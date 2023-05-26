@@ -4,16 +4,13 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
-
 using TanksVS.Scripts;
-using TiledSharp;
 
 namespace TanksVS.States
 {
     public class LevelState : State
     {
         private readonly List<Button> _buttons;
-
         private readonly Dictionary<Keys, Actions> _controlDictionary = new()
         {
             { Keys.A, Actions.Left },
@@ -22,7 +19,6 @@ namespace TanksVS.States
             { Keys.S, Actions.Backward },
             { Keys.Q, Actions.Fire },
         };
-
         private readonly Dictionary<Keys, Actions> _controlDictionary2 = new()
         {
             { Keys.Left, Actions.Left},
@@ -44,10 +40,10 @@ namespace TanksVS.States
             var b_level2 = new Button(t_level2, new Vector2(_game.Width / 2 - t_level2.Width / 2, _game.Height / 2));
             var b_level3 = new Button(t_level3, new Vector2(_game.Width / 2 - t_level3.Width / 2 + 200, _game.Height / 2));
 
-            b_back.Click += Back;
-            b_level1.Click += Level_One;
-            b_level2.Click += Level_Two;
-            b_level3.Click += Level_Three;
+            b_back.Click += BackToMain;
+            b_level1.Click += LoadLevelOne;
+            b_level2.Click += LoadLevelTwo;
+            b_level3.Click += LoadLevelThree;
 
 
             _buttons = new List<Button>
@@ -76,56 +72,45 @@ namespace TanksVS.States
                 button.Update(gameTime);
         }
 
-        private void Back(object sender, EventArgs e) => _game.ChangeState(new MainMenuState(_game, _graphics, _content));
+        private void BackToMain(object sender, EventArgs e) => _game.ChangeState(new MainMenuState(_game, _graphics, _content));
 
-        private void Level_Three(object sender, EventArgs e)
+        private void LoadLevelOne(object sender, EventArgs e)
         {
-            Console.WriteLine("3");
+            LevelInit("MapTanks", "GrassPlusWallsTiles",
+                new Vector2(120, 140), 0.5f,
+                new Vector2(1380, 640), -2f,
+                15);
+        }
+        
+        private void LoadLevelTwo(object sender, EventArgs e)
+        {
+            LevelInit("Map2", "DesertTiles", 
+                new Vector2(120, 140), 0.5f,
+                new Vector2(1380, 740), 3.14f, 
+                5);
+
         }
 
-        private void Level_Two(object sender, EventArgs e)
+        private void LoadLevelThree(object sender, EventArgs e)
+        {
+            LevelInit("Map3", "CityTiles",
+                new Vector2(120, 140), 0.5f,
+                new Vector2(1500, 640), -1.57f,
+                7);
+        }
+
+        private void LevelInit(string map, string tiles, 
+            Vector2 firstPlayerPosition, float firstPlayerRotation, 
+            Vector2 secondPlayerPosition, float secondPlayerRotation,
+            int bulletSpeed)
         {
             _game.Players = new Player[2]
             {
-                Player.Init(new Vector2(120, 140), 0.5f, "TankOne", 1, _controlDictionary, _content),
-                Player.Init(new Vector2(1380, 700), MathHelper.Pi / 2, "TankTwo", 2, _controlDictionary2, _content)
+                Player.Init(firstPlayerPosition, firstPlayerRotation, "TankOne", 1, _controlDictionary, _content),
+                Player.Init(secondPlayerPosition, secondPlayerRotation, "TankTwo", 2, _controlDictionary2, _content)
             };
-
-            _game.MapManager = MapManager.Init("Content/Map2.tmx", "DesertTiles", _content);
-            _game.Colliders = new List<Rectangle>();
-            _game.Slow = new List<Rectangle>();
-
-            Bullet.Speed = 5;
-            foreach (var item in _game.MapManager.Map.ObjectGroups["Collision"].Objects)
-            {
-                _game.Colliders.Add(new Rectangle((int)item.X + 15, (int)item.Y, (int)item.Width + 15, (int)item.Height));
-            }
-
-            
-            foreach (var item in _game.MapManager.Map.ObjectGroups["Slow"].Objects)
-            {
-                _game.Slow.Add(new Rectangle((int)item.X + 15, (int)item.Y, (int)item.Width + 15, (int)item.Height));
-            }
-            
-            _game.ChangeState(new GameState(_game, _graphics, _content));
-        }
-
-        private void Level_One(object sender, EventArgs e)
-        {
-            _game.Players = new Player[2]
-            {
-                Player.Init(new Vector2(120, 140), 0.5f, "TankOne", 1, _controlDictionary, _content),
-                Player.Init(new Vector2(1380, 640), MathHelper.Pi / 2, "TankTwo", 2, _controlDictionary2, _content)
-            };
-            Bullet.Speed = 15;
-            _game.MapManager = MapManager.Init("Content/MapTanks.tmx", "GrassPlusWallsTiles", _content);
-            _game.Colliders = new List<Rectangle>();
-            _game.Slow = new List<Rectangle>();
-            foreach (var item in _game.MapManager.Map.ObjectGroups["Collision"].Objects)
-            {
-                _game.Colliders.Add(new Rectangle((int)item.X + 15, (int)item.Y, (int)item.Width + 15, (int)item.Height));
-            }
-
+            Bullet.Speed = bulletSpeed;
+            _game.MapManager = MapManager.Init($"Content/{map}.tmx", tiles, _content, _game);
             _game.ChangeState(new GameState(_game, _graphics, _content));
         }
     }

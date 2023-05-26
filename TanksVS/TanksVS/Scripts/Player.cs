@@ -10,42 +10,31 @@ namespace TanksVS.Scripts
 {
     public class Player : Sprite
     {
-        bool IsSlowed = false;
-        private Dictionary<Keys, Actions> ControlDictionary;
-
         public static List<Bullet> Bullets = new();
-
-        public Points Points { get; set; }
-
-        public int ID { get; private set; }
-
         public Vector2 Origin { get; }
-
-        public Texture2D TankTexture { get; private set; }
-
-        public float Rotation { get; private set; }
-
+        public Points Points { get; set; }
         public bool IsAlive { get; set; }
-
+        public int ID { get; private set; }
+        public Texture2D TankTexture { get; private set; }
+        public float Rotation { get; private set; }
         public static new Vector2 Velocity { get; private set; }
-
+        private bool IsSlowed = false;
         private DateTime _fireTime;
+        private Dictionary<Keys, Actions> _сontrolDictionary;
 
+        
 
-
-        public Player(Vector2 position, float rotation, Texture2D texture, int id, Dictionary<Keys, Actions> controlDictionary) : base(position, Velocity, texture)
+        public static Player Init(Vector2 position, float rotation, string textureName, int id, Dictionary<Keys, Actions> controlDictionary, ContentManager content)
         {
-            Velocity = new(150,150);
-            ControlDictionary = controlDictionary;
-            Position = position;
-            Rotation = rotation;
-            TankTexture = texture;
-            Rotation = MathHelper.Clamp(0, 0, 3.14f);
-            _fireTime = DateTime.Now;
-            Origin = new Vector2(TankTexture.Width / 2, TankTexture.Height / 2);
+            return new Player(position,
+                rotation,
+                content.Load<Texture2D>(textureName), id, controlDictionary);
+        }
+
+        public void Respawn(Game1 game)
+        {
+            Position = RandomCoordinates(game.Collision);
             IsAlive = true;
-            ID = id;
-            Points = new Points(0, new Vector2(id == 1 ? 1550 : 20, 10));
         }
 
         public void Control(GameTime gameTime, Keys[] keys, Game1 game)
@@ -55,17 +44,17 @@ namespace TanksVS.Scripts
                 Bound(game);
                 var deltaSeconds = (float)gameTime.ElapsedGameTime.TotalSeconds;
                 var deltaRotation = 3f;
-                
+
                 foreach (var key in keys)
                 {
                     if (key == Keys.R)
                     {
                         Respawn(game);
                     }
-                       
-                    if (ControlDictionary.ContainsKey(key))
+
+                    if (_сontrolDictionary.ContainsKey(key))
                     {
-                        switch (ControlDictionary[key])
+                        switch (_сontrolDictionary[key])
                         {
                             case Actions.Left:
                                 Rotation -= deltaRotation * deltaSeconds;
@@ -91,31 +80,50 @@ namespace TanksVS.Scripts
             }
         }
 
-
-        private void Fire()
+        private Player(Vector2 position, float rotation, Texture2D texture, int id, Dictionary<Keys, Actions> controlDictionary) : base(position, Velocity, texture)
         {
+            Velocity = new(150, 150);
+            _сontrolDictionary = controlDictionary;
+            Position = position;
+            Rotation = rotation;
+            TankTexture = texture;
             _fireTime = DateTime.Now;
-            Bullets.Add(new Bullet(GetPositionForFire, GetChangedRotation(Rotation), ID));
+            Origin = new Vector2(TankTexture.Width / 2, TankTexture.Height / 2);
+            IsAlive = true;
+            ID = id;
+            Points = new Points(0, new Vector2(id == 1 ? 1550 : 20, 10));
         }
 
         private void Bound(Game1 game)
         {
-            foreach (var wall in game.Colliders)
+            foreach (var dieWall in game.DieCollision)
+            {
+                if (Collide(dieWall))
+                {
+                    Points.Count++;
+                    Respawn(game);
+                    return;
+                }
+            }
+
+            foreach (var wall in game.Collision)
             {
                 if (Collide(wall))
                 {
                     if (IsTouchingLeft(wall))
                         Position.X = wall.Left - TankTexture.Width / 2 - 23;
-                    else if (IsTouchingRight(wall))
-                        Position.X = wall.Right;
-                    else if (IsTouchingBottom(wall))
-                        Position.Y = wall.Top - TankTexture.Height / 2 - 15;
                     else if (IsTouchingTop(wall))
+                        Position.Y = wall.Top - TankTexture.Height / 2 - 15;
+
+                    if (IsTouchingRight(wall))
+                        Position.X = wall.Right;
+
+                    else if (IsTouchingBottom(wall))
                         Position.Y = wall.Bottom;
                 }
             }
 
-            foreach (var wall in game.Slow)
+            foreach (var wall in game.SlowCollision)
             {
                 if (Collide(wall))
                 {
@@ -129,23 +137,23 @@ namespace TanksVS.Scripts
                 Velocity = new(70, 70);
             else
                 Velocity = new(150, 150);
-
         }
 
-        public void Respawn(Game1 game)
+        private void Fire()
         {
-            Position = RandomCoordinates(game.Colliders);
-            IsAlive = true;
+            _fireTime = DateTime.Now;
+            var bullet = new Bullet(GetPositionForFire, GetChangedRotation(Rotation), ID);
+
+            Bullets.Add(bullet);
         }
 
-        private Vector2 RandomCoordinates(List<Rectangle> colliders)
+        
+
+        private static Vector2 RandomCoordinates(List<Rectangle> collision)
         {
             var rand = new Random();
-
-            var randomCoordinates = new Vector2(400, 120);
-            Vector2 coords = new Vector2(rand.Next(120, 1500), rand.Next(140, 700));
-
-            foreach (var wall in colliders)
+            var coords = new Vector2(rand.Next(120, 1500), rand.Next(140, 700));
+            foreach (var wall in collision)
             {
                 if (InWall(wall, coords))
                 {
@@ -156,18 +164,6 @@ namespace TanksVS.Scripts
             return coords;
         }
 
-        
-
-
-        public static Player Init(Vector2 position, float rotation,string textureName, int id, Dictionary<Keys, Actions> controlDictionary, ContentManager content)
-        {
-            return new Player(position,
-                rotation,
-                content.Load<Texture2D>(textureName), id, controlDictionary);
-        }
-
         private Vector2 GetPositionForFire => Position + GetChangedRotation(Rotation) * 30;
-
-        private static Vector2 GetChangedRotation(float degrees) => new((float)Math.Cos(degrees), (float)Math.Sin(degrees));
     }
 }

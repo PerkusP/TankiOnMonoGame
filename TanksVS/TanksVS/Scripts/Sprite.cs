@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-
+using System;
 
 namespace TanksVS.Scripts
 {
@@ -21,13 +21,12 @@ namespace TanksVS.Scripts
 
         public bool InWall(Rectangle wall)
         {
-            var coords = new Vector2(Position.X + Texture.Width/2, Position.Y + Texture.Height/2);
+            var coords = new Vector2(Position.X + Texture.Width / 2, Position.Y + Texture.Height / 2);
             return wall.X <= coords.X &&
                 wall.X + wall.Width >= coords.X &&
                 wall.Y <= coords.Y &&
                 wall.Y + wall.Height >= coords.Y;
         }
-
 
         public static bool InWall(Rectangle wall, Vector2 coords) => wall.X <= coords.X &&
             wall.X + wall.Width >= coords.X &&
@@ -50,7 +49,7 @@ namespace TanksVS.Scripts
                 Rectangle.Top < rect.Bottom;
         }
 
-        public bool IsTouchingBottom(Rectangle rect)
+        public bool IsTouchingTop(Rectangle rect)
         {
             return Rectangle.Bottom > rect.Top &&
                 Rectangle.Top < rect.Top &&
@@ -58,12 +57,14 @@ namespace TanksVS.Scripts
                 Rectangle.Left < rect.Right;
         }
 
-        public bool IsTouchingTop(Rectangle rect)
+        public bool IsTouchingBottom(Rectangle rect)
         {
             return Rectangle.Top < rect.Bottom &&
                 Rectangle.Bottom > rect.Bottom &&
                 Rectangle.Right > rect.Left &&
                 Rectangle.Left < rect.Right;
         }
+
+        public static Vector2 GetChangedRotation(float degrees) => new((float)Math.Cos(degrees), (float)Math.Sin(degrees));
     }
 }
