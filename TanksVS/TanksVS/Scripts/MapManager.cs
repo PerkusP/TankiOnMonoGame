@@ -38,12 +38,6 @@ namespace TanksVS.Scripts
             return new MapManager(_map, tileSet, tilesetTilesSize, tileWidth, tileHeight);
         }
 
-        public void Draw(SpriteBatch spriteBatch)
-        {
-
-            
-        }
-
         private MapManager(TmxMap map, Texture2D tileSet, int tileSetTileWide, int tileWidth, int tileHeight)
         {
             Map = map;

@@ -59,6 +59,12 @@ namespace TanksVS.States
         {
             spriteBatch.Begin();
             spriteBatch.Draw(_content.Load<Texture2D>("BackGround"), new Rectangle(0, 0, 1600, 800), Color.White);
+            var instuctions1 = _content.Load<Texture2D>("Instructions1");
+            var instuctions2 = _content.Load<Texture2D>("Instructions2");
+
+            spriteBatch.Draw(instuctions1, new Vector2(_game.Width / 2 - instuctions1.Width - 150, 250), Color.White);
+            spriteBatch.Draw(instuctions2, new Vector2(_game.Width / 2 + instuctions2.Width, 250), Color.White);
+
             foreach (var button in _buttons)
             {
                 button.Draw(spriteBatch);
