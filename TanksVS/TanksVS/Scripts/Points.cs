@@ -4,7 +4,7 @@ namespace TanksVS.Scripts
 {
     public class Points
     {
-        public Vector2 Position { get; private set; }
+        public Vector2 Position { get; }
         private int _count;
 
         public Points(int points, Vector2 position)
@@ -15,16 +15,8 @@ namespace TanksVS.Scripts
 
         public int Count
         {
-            get
-            {
-                return _count;
-            }
-            set
-            {
-                _count += 1;
-
-            }
+            get => _count;
+            set => _count += 1;
         }
-
     }
 }

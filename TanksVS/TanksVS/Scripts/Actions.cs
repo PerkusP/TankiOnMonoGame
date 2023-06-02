@@ -1,12 +1,10 @@
-﻿namespace TanksVS.Scripts
+﻿namespace TanksVS.Scripts;
+
+public enum Actions
 {
-    public enum Actions
-    {
-        Right,
-        Left,
-        Backward,
-        Forward,
-        Fire,
-        None
-    }
+    Right,
+    Left,
+    Backward,
+    Forward,
+    Fire
 }

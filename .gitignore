@@ -346,3 +346,5 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
+TanksVS/TanksVS/.idea/.idea.TanksVS.dir/.idea/vcs.xml
+TanksVS/TanksVS/.idea/.idea.TanksVS.dir/.idea/encodings.xml

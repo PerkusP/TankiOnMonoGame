@@ -1,13 +1,10 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
+﻿using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
-using System.Collections.Generic;
-using System.Linq;
+using TanksVS.Scripts;
 using TanksVS.States;
-using TiledSharp;
 
-namespace TanksVS.Scripts
+namespace TanksVS
 {
     public class Game1 : Game
     {
@@ -17,12 +14,12 @@ namespace TanksVS.Scripts
         public List<Rectangle> SlowCollision;
         public List<Rectangle> DieCollision;
         public MapManager MapManager;
-        private GraphicsDeviceManager _graphics;
+        private readonly GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
         private State _currentState;
         private State _nextState;
-        public int Width { get; private set; }
-        public int Height { get; private set; }
+        public int Width { get; }
+        public int Height { get; }
 
         public Game1()
         {
@@ -30,10 +27,8 @@ namespace TanksVS.Scripts
             ChangeResolution(1600, 800);
             //_graphics.ToggleFullScreen();
             Content.RootDirectory = "Content";
-            
             Width = _graphics.PreferredBackBufferWidth;
             Height = _graphics.PreferredBackBufferHeight;
-
         }
 
         protected override void Initialize()
@@ -49,7 +44,6 @@ namespace TanksVS.Scripts
             SpriteFont = Content.Load<SpriteFont>("Pixel");
             _currentState = new MainMenuState(this, _graphics.GraphicsDevice, Content);
         }
-
         
         protected override void Update(GameTime gameTime)
         {
@@ -66,16 +60,11 @@ namespace TanksVS.Scripts
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.White);
-            
             _currentState.Draw(gameTime, _spriteBatch);
-           
             base.Draw(gameTime);
         }
 
-        public void ChangeState(State state)
-        {
-            _nextState = state;
-        }
+        public void ChangeState(State state) => _nextState = state;
 
         private void ChangeResolution(int width, int height)
         {

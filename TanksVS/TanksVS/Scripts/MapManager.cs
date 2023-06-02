@@ -16,26 +16,26 @@ namespace TanksVS.Scripts
 
         public static MapManager Init(string map, string tileset,ContentManager content, Game1 game)
         {
-            var _map = new TmxMap(map);
+            var tmxMap = new TmxMap(map);
             var tileSet = content.Load<Texture2D>(tileset);
-            var tileWidth = _map.Tilesets[0].TileWidth;
-            var tileHeight = _map.Tilesets[0].TileHeight;
+            var tileWidth = tmxMap.Tilesets[0].TileWidth;
+            var tileHeight = tmxMap.Tilesets[0].TileHeight;
             var tilesetTilesSize = tileSet.Width / tileWidth;
 
-            game.Collision = new();
-            game.SlowCollision = new();
-            game.DieCollision = new();
+            game.Collision = new List<Rectangle>();
+            game.SlowCollision = new List<Rectangle>();
+            game.DieCollision = new List<Rectangle>();
 
-            AddObjectsToList(game.Collision, _map.ObjectGroups["Collision"].Objects);
+            AddObjectsToList(game.Collision, tmxMap.ObjectGroups["Collision"].Objects);
 
-            if (_map.ObjectGroups.Contains("Slow"))
-                AddObjectsToList(game.SlowCollision, _map.ObjectGroups["Slow"].Objects);
+            if (tmxMap.ObjectGroups.Contains("Slow"))
+                AddObjectsToList(game.SlowCollision, tmxMap.ObjectGroups["Slow"].Objects);
 
-            if (_map.ObjectGroups.Contains("Die"))
-                AddObjectsToList(game.DieCollision, _map.ObjectGroups["Die"].Objects);
+            if (tmxMap.ObjectGroups.Contains("Die"))
+                AddObjectsToList(game.DieCollision, tmxMap.ObjectGroups["Die"].Objects);
 
 
-            return new MapManager(_map, tileSet, tilesetTilesSize, tileWidth, tileHeight);
+            return new MapManager(tmxMap, tileSet, tilesetTilesSize, tileWidth, tileHeight);
         }
 
         private MapManager(TmxMap map, Texture2D tileSet, int tileSetTileWide, int tileWidth, int tileHeight)
