@@ -16,14 +16,15 @@ public static class GameDraw
             for (var j = 0; j < layer.Tiles.Count; j++)
             {
                 var gid = layer.Tiles[j].Gid;
-                if (gid == 0) continue;
-                    
+                if (gid == 0) 
+                    continue;
+                
                 var tileFrame = gid - 1;
-                var col = tileFrame % game.MapManager.TileSetTileWide;
+                var column = tileFrame % game.MapManager.TileSetTileWide;
                 var row = (int)Math.Floor((double)tileFrame / game.MapManager.TileSetTileWide);
                 var x = j % game.MapManager.Map.Width * game.MapManager.Map.TileWidth;
                 var y = (int)Math.Floor(j / (double)game.MapManager.Map.Width) * game.MapManager.Map.TileHeight;
-                var rect = new Rectangle(game.MapManager.TileWidth * col, game.MapManager.TileHeight * row,
+                var rect = new Rectangle(game.MapManager.TileWidth * column, game.MapManager.TileHeight * row,
                     game.MapManager.TileWidth, game.MapManager.TileHeight);
                 spriteBatch.Draw(game.MapManager.TileSet, 
                     new Rectangle(x, y, game.MapManager.TileWidth, 

@@ -66,5 +66,6 @@ public class Sprite
                Rectangle.Left < rect.Right;
     }
 
-    public static Vector2 GetChangedRotation(float degrees) => new((float)Math.Cos(degrees), (float)Math.Sin(degrees));
+    protected static Vector2 GetChangedRotation(float degrees) =>
+        new((float)Math.Cos(degrees), (float)Math.Sin(degrees));
 }

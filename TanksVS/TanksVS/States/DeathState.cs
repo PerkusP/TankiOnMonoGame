@@ -26,7 +26,7 @@ public class DeathState : State
         };
     }
 
-    public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
+    public override void Draw(SpriteBatch spriteBatch)
     {
         GameDraw.Draw(_graphics, spriteBatch, _game);
         spriteBatch.Begin();

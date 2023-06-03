@@ -10,7 +10,7 @@ public abstract class State
     protected GraphicsDevice _graphics;
     protected Game1 _game;
 
-    public abstract void Draw(GameTime gameTime, SpriteBatch spriteBatch);
+    public abstract void Draw(SpriteBatch spriteBatch);
 
     protected State(Game1 game, GraphicsDevice graphics, ContentManager content)
     {

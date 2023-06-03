@@ -55,7 +55,7 @@ public class LevelState : State
         };
     }
 
-    public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
+    public override void Draw(SpriteBatch spriteBatch)
     {
         spriteBatch.Begin();
         spriteBatch.Draw(_content.Load<Texture2D>("BackGround"), new Rectangle(0, 0, 1600, 800), Color.White);

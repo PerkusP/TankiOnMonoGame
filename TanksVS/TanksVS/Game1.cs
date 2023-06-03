@@ -60,7 +60,7 @@ namespace TanksVS
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.White);
-            _currentState.Draw(gameTime, _spriteBatch);
+            _currentState.Draw(_spriteBatch);
             base.Draw(gameTime);
         }
 

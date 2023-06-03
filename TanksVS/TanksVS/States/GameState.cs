@@ -22,14 +22,8 @@ public class GameState : State
         };
     }
 
-    private void ReturnToMain(object sender, EventArgs e)
+    public override void Draw(SpriteBatch spriteBatch)
     {
-        _game.ChangeState(new MainMenuState(_game, _graphics, _content));
-    }
-
-    public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
-    {
-            
         GameDraw.Draw(_graphics, spriteBatch, _game);
         spriteBatch.Begin();
         foreach (var button in _buttons)
@@ -46,5 +40,10 @@ public class GameState : State
         {
             button.Update(gameTime);
         }
+    }
+    
+    private void ReturnToMain(object sender, EventArgs e)
+    {
+        _game.ChangeState(new MainMenuState(_game, _graphics, _content));
     }
 }

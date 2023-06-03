@@ -14,7 +14,7 @@ namespace TanksVS.Scripts
         public readonly int TileWidth;
         public readonly int TileHeight;
 
-        public static MapManager Init(string map, string tileset,ContentManager content, Game1 game)
+        public static MapManager Init(string map, string tileset, ContentManager content, Game1 game)
         {
             var tmxMap = new TmxMap(map);
             var tileSet = content.Load<Texture2D>(tileset);
